@@ -1,127 +1,117 @@
 import 'swiper/css';
 import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
-import React, { useRef, useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { FreeMode, Navigation } from 'swiper/modules';
-import { type Event } from '@/shared/lib/types';
+import React, { useEffect } from 'react';
+import { SwiperSlide } from 'swiper/react';
+import { FreeMode, Navigation, Pagination } from 'swiper/modules';
 import { EventCard } from '@/entities/event';
-import { Button, Icon } from '@/shared/ui';
-import { type NavigationOptions, type Swiper as SwiperType } from 'swiper/types';
+import { EventsContainer, ContentWrapper, StyledSwiper, Line } from './Styled';
+import { SliderNavigation } from './SliderNavigation';
+import { CustomPaginationComponent } from './CustomPagination';
+import { type Event } from '@/shared/lib/types';
+import { type Swiper as SwiperType } from 'swiper/types';
+import { useEventsSlider } from '../../model/useEventSlider';
 
 interface EventsSliderProps {
   events: Event[];
   currentPeriod: number;
   onSwiperInit: (swiper: SwiperType) => void;
+  widgetId: string;
 }
 
-const EventsContainer = styled.div`
-  position: absolute;
-  bottom: 50px;
-  left: 5rem;
-  right: 5rem;
-`;
+const EventsSlider: React.FC<EventsSliderProps> = ({
+  events,
+  currentPeriod,
+  onSwiperInit,
+  widgetId,
+}) => {
+  const {
+    swiperRef,
+    isBeginning,
+    isEnd,
+    activeIndex,
+    isMobile,
+    prevClass,
+    nextClass,
+    handleSwiperInit,
+    handleBulletClick,
+  } = useEventsSlider(currentPeriod, widgetId, onSwiperInit);
 
-const ContentWrapper = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const StyledSwiper = styled(Swiper)`
-  width: 100%;
-  height: 100px;
-  margin: 0 30px;
-`;
-
-const SwiperNavButton = styled(Button)<{ position: 'left' | 'right'; $hidden?: boolean }>`
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-  ${({ position }) => (position === 'left' ? 'left: -65px;' : 'right: -65px;')}
-  visibility: ${({ $hidden }) => ($hidden ? 'hidden' : 'visible')};
-  transition: visibility 0.3s;
-`;
-
-const EventsSlider: React.FC<EventsSliderProps> = ({ events, currentPeriod, onSwiperInit }) => {
   useEffect(() => {
     const swiper = swiperRef.current;
-    if (!swiper) return;
+    if (!swiper || isMobile) return;
 
-    if (typeof swiper.params.navigation === 'object' && swiper.params.navigation !== null) {
-      swiper.params.navigation.prevEl = '.swiper-button-prev-custom';
-      swiper.params.navigation.nextEl = '.swiper-button-next-custom';
+    const navigationOptions = {
+      prevEl: `.${prevClass}`,
+      nextEl: `.${nextClass}`,
+    };
+
+    if (typeof swiper.params.navigation === 'object') {
+      Object.assign(swiper.params.navigation, navigationOptions);
     } else {
-      swiper.params.navigation = {
-        prevEl: '.swiper-button-prev-custom',
-        nextEl: '.swiper-button-next-custom',
-      } as NavigationOptions;
+      swiper.params.navigation = navigationOptions;
     }
 
-    swiper.navigation.destroy();
-    swiper.navigation.init();
-    swiper.navigation.update();
-  }, [currentPeriod]);
-
-  const swiperRef = useRef<SwiperType>(null);
-  const [isBeginning, setIsBeginning] = useState(true);
-  const [isEnd, setIsEnd] = useState(false);
-
-  const handleSwiperInit = (swiper: SwiperType) => {
-    swiperRef.current = swiper;
-    onSwiperInit(swiper);
-    setIsBeginning(swiper.isBeginning);
-    setIsEnd(swiper.isEnd);
-
-    swiper.on('slideChange', () => {
-      setIsBeginning(swiper.isBeginning);
-      setIsEnd(swiper.isEnd);
-    });
-  };
+    swiper.navigation?.destroy();
+    swiper.navigation?.init();
+    swiper.navigation?.update();
+  }, [currentPeriod, isMobile, prevClass, nextClass]);
 
   return (
-    <EventsContainer>
-      <ContentWrapper>
-        <SwiperNavButton
-          className="swiper-button-prev-custom"
-          variant="navigation"
-          position="left"
-          $hidden={isBeginning}
-        >
-          <Icon name="arrow-left" />
-        </SwiperNavButton>
+    <>
+      <EventsContainer>
+        <ContentWrapper>
+          {!isMobile && (
+            <SliderNavigation className={prevClass} position="left" hidden={isBeginning} />
+          )}
 
-        <StyledSwiper
-          modules={[Navigation, FreeMode]}
-          slidesPerView={3}
-          spaceBetween={30}
-          freeMode
-          navigation={{
-            prevEl: '.swiper-button-prev-custom',
-            nextEl: '.swiper-button-next-custom',
-          }}
-          onSwiper={handleSwiperInit}
-        >
-          {events.map((event, index) => (
-            <SwiperSlide key={`${currentPeriod}-${index}`}>
-              <EventCard event={event} />
-            </SwiperSlide>
-          ))}
-        </StyledSwiper>
+          <StyledSwiper
+            modules={[FreeMode, ...(isMobile ? [Pagination] : [Navigation])]}
+            slidesPerView={isMobile ? 'auto' : 3}
+            spaceBetween={isMobile ? 25 : 30}
+            freeMode={!isMobile}
+            navigation={
+              !isMobile
+                ? {
+                    prevEl: `.${prevClass}`,
+                    nextEl: `.${nextClass}`,
+                  }
+                : undefined
+            }
+            pagination={
+              isMobile
+                ? {
+                    clickable: true,
+                    el: '.custom-pagination',
+                    bulletClass: 'custom-pagination-bullet',
+                    bulletActiveClass: 'custom-pagination-bullet-active',
+                  }
+                : false
+            }
+            onSwiper={handleSwiperInit}
+          >
+            {events.map((event, index) => (
+              <SwiperSlide key={`${currentPeriod}-${index}`}>
+                <EventCard event={event} $active={index === activeIndex} />
+              </SwiperSlide>
+            ))}
+          </StyledSwiper>
 
-        <SwiperNavButton
-          className="swiper-button-next-custom"
-          variant="navigation"
-          position="right"
-          $hidden={isEnd}
-        >
-          <Icon name="arrow-right" />
-        </SwiperNavButton>
-      </ContentWrapper>
-    </EventsContainer>
+          {!isMobile && <SliderNavigation className={nextClass} position="right" hidden={isEnd} />}
+        </ContentWrapper>
+      </EventsContainer>
+
+      {isMobile && (
+        <CustomPaginationComponent
+          total={events.length}
+          activeIndex={activeIndex}
+          onBulletClick={handleBulletClick}
+        />
+      )}
+
+      {isMobile && <Line />}
+    </>
   );
 };
 

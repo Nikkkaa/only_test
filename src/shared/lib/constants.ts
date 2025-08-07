@@ -7,8 +7,19 @@ export const TIMELINE_CONSTANTS = {
   YEAR_ANIMATION_DURATION: 0.8,
 } as const;
 
+export const COLORS = {
+  WHITE: 'rgb(255, 255, 255)',
+  PRIMARY: 'rgb(66, 86, 122)',
+  SECONDARY: 'rgb(93, 95, 239)',
+  SECONDARY_BLUE: 'rgb(56, 119, 238)',
+  ACCENT: 'rgb(239, 93, 168)',
+  BACKGROUND: 'rgb(244, 245, 249)',
+  BORDER: 'rgba(48, 62, 88, 0.5)',
+  BORDER_LIGHT: 'rgba(48, 62, 88, 0.2)',
+} as const;
+
 export const BREAKPOINTS = {
-  MOBILE: 320,
+  MOBILE: 768,
   DESKTOP: 1024,
 } as const;
 
@@ -19,16 +30,6 @@ export const SWIPER_CONFIG = {
   },
   DESKTOP: {
     slidesPerView: 3,
-    spaceBetween: 0,
+    spaceBetween: 30,
   },
-} as const;
-
-export const COLORS = {
-  PRIMARY: 'rgb(66, 86, 122)',
-  SECONDARY: 'rgb(93, 95, 239)',
-  SECONDARY_BLUE: 'rgb(56, 119, 238)',
-  ACCENT: 'rgb(239, 93, 168)',
-  BACKGROUND: 'rgb(244, 245, 249)',
-  BORDER: 'rgba(48, 62, 88, 0.5)',
-  BORDER_LIGHT: 'rgba(48, 62, 88, 0.2)',
 } as const;

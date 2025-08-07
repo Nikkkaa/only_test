@@ -1,4 +1,4 @@
-import { COLORS } from '@/shared/lib';
+import { COLORS, BREAKPOINTS } from '@/shared/lib';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -27,12 +27,12 @@ const StyledButton = styled.button<{ variant: string; size: string }>`
         return `
           width: 50px;
           height: 50px;
-          background: #fff;
+          background: ${COLORS.BACKGROUND};
           border: 1px solid rgba(66, 86, 122, 0.5);
-          color: #42567A;
+          color: ${COLORS.PRIMARY};
           
           &:hover {
-            background: #E0E2E6;
+            background: ${COLORS.WHITE};
             border-color: rgba(66, 86, 122, 0.4);
           }
           
@@ -40,16 +40,11 @@ const StyledButton = styled.button<{ variant: string; size: string }>`
             opacity: 0.5;
             cursor: not-allowed;
           }
-        `;
-      case 'primary':
-        return `
-          background: #5D5FEF;
-          color: white;
-          padding: 12px 24px;
-          border-radius: 8px;
-          
-          &:hover {
-            background: #4A4CD8;
+
+          @media (max-width: ${BREAKPOINTS.MOBILE}px) {
+            width: 35px;
+            height: 35px;
+            padding: 0;
           }
         `;
       default:
@@ -61,7 +56,8 @@ const StyledButton = styled.button<{ variant: string; size: string }>`
           border-radius: 8px;
           
           &:hover {
-            background: rgba(66, 86, 122, 0.05);
+            background: ${COLORS.PRIMARY};
+            opacity: 0.05;
           }
         `;
     }

@@ -1,1 +1,1 @@
-export { useTimeline } from './useTimeline';
+export { useIsMobile } from './useIsMobile';

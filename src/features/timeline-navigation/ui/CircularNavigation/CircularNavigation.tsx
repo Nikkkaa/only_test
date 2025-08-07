@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { gsap } from 'gsap';
 import { type TimelinePeriod } from '@/shared/lib/types';
-import { TIMELINE_CONSTANTS, COLORS } from '@/shared/lib/constants';
+import { TIMELINE_CONSTANTS, COLORS, BREAKPOINTS } from '@/shared/lib/constants';
 import Dot from './Dot/Dot';
 
 interface CircularNavigationProps {
@@ -18,9 +18,13 @@ const NavigationContainer = styled.div`
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 530px;
-  height: 530px;
-  z-index: 10;
+  width: clamp(200px, 40vw, 530px);
+  height: clamp(200px, 40vw, 530px);
+  z-index: 12;
+
+  @media (max-width: ${BREAKPOINTS.MOBILE}px) {
+    display: none;
+  }
 `;
 
 const Circle = styled.div`
@@ -40,9 +44,23 @@ const CircularNavigation: React.FC<CircularNavigationProps> = ({
 }) => {
   const circleRef = useRef<HTMLDivElement>(null);
   const [circleRotation, setCircleRotation] = useState(0);
+  const [circleRadius, setCircleRadius] = useState(265);
+
+  useEffect(() => {
+    const updateRadius = () => {
+      const container = circleRef.current;
+      if (container) {
+        const size = container.offsetWidth;
+        setCircleRadius(size / 2);
+      }
+    };
+
+    updateRadius();
+    window.addEventListener('resize', updateRadius);
+    return () => window.removeEventListener('resize', updateRadius);
+  }, []);
 
   const getAngle = (index: number) => (360 / totalPeriods) * index;
-
   useEffect(() => {
     const currentDotInitialAngle = getAngle(currentPeriod);
     const desiredRotation = TIMELINE_CONSTANTS.TARGET_ACTIVE_ANGLE - currentDotInitialAngle;
@@ -84,6 +102,7 @@ const CircularNavigation: React.FC<CircularNavigationProps> = ({
             dotNumber={index + 1}
             category={timelineData[index]?.category || ''}
             isParentAnimating={isAnimating}
+            circleRadius={circleRadius}
           />
         ))}
       </Circle>

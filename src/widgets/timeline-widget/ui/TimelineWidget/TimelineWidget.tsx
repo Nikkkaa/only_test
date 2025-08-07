@@ -1,22 +1,26 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
-import { COLORS } from '@/shared/lib/constants';
+import { COLORS, BREAKPOINTS } from '@/shared/lib/constants';
 import {
-  useTimelineNavigation,
   CircularNavigation,
-  TimelineNavigation,
-  YearDisplay,
   EventsSlider,
+  TimelineNavigation,
+  useTimelineNavigation,
+  YearDisplay,
 } from '@/features';
+import { useIsMobile } from '@/hooks';
+import { Header, Title } from './Header';
 
 const TimelineContainer = styled.div`
   width: 75vw;
   height: 100vh;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border: 1px solid ${COLORS.BORDER_LIGHT};
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  grid-template-rows: repeat(12, 1fr);
+  grid-column-gap: 0px;
+  grid-row-gap: 0px;
+  align-items: center;
 
   &::before {
     content: '';
@@ -41,39 +45,42 @@ const TimelineContainer = styled.div`
     transform: translateY(-50%);
     opacity: 0.1;
   }
-`;
 
-const Header = styled.div`
-  position: absolute;
-  top: 10.625rem;
-  left: 0;
-`;
+  @media (max-width: ${BREAKPOINTS.MOBILE}px) {
+    width: 100vw;
+    height: 100vh;
+    padding: 0 20px;
+    background: ${COLORS.BACKGROUND};
+    overflow-y: auto;
+    overflow-x: hidden;
 
-const TitleWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4.688rem;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
 `;
 
 const Line = styled.div`
+  grid-area: 3 / 1 / 5 / 1;
   width: 5px;
-  height: 120px;
-  background: linear-gradient(180deg, #3877ee 0%, #ef5da8 100%);
+  height: clamp(60px, 14vh, 150px);
+  background: linear-gradient(180deg, ${COLORS.SECONDARY_BLUE} 0%, ${COLORS.ACCENT} 100%);
   border-radius: 3px;
-`;
 
-const Title = styled.h1`
-  font-size: 56px;
-  font-weight: 700;
-  color: ${COLORS.PRIMARY};
-  margin: 0;
-  line-height: 1.1;
-  height: 134px;
-  white-space: pre-line;
+  @media (max-width: ${BREAKPOINTS.MOBILE}px) {
+    display: none;
+  }
 `;
 
 const TimelineWidget: React.FC = () => {
+  const isMobile = useIsMobile();
   const {
     currentPeriod,
     isAnimating,
@@ -87,6 +94,7 @@ const TimelineWidget: React.FC = () => {
     handleSwiperInit,
     initializeAnimation,
   } = useTimelineNavigation();
+  const widgetId = React.useId();
 
   useEffect(() => {
     initializeAnimation();
@@ -95,11 +103,10 @@ const TimelineWidget: React.FC = () => {
   return (
     <TimelineContainer ref={timelineRef}>
       <Header>
-        <TitleWrapper>
-          <Line />
-          <Title>Исторические{'\n'}даты</Title>
-        </TitleWrapper>
+        <Title>Исторические{'\n'}даты</Title>
       </Header>
+
+      {!isMobile && <Line />}
 
       <CircularNavigation
         totalPeriods={timelineData.length}
@@ -127,6 +134,7 @@ const TimelineWidget: React.FC = () => {
         events={currentData.events}
         currentPeriod={currentPeriod}
         onSwiperInit={handleSwiperInit}
+        widgetId={widgetId}
       />
     </TimelineContainer>
   );

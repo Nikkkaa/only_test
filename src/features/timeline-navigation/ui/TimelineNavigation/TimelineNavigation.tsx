@@ -1,28 +1,41 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Button, Icon } from '@/shared/ui';
+import { BREAKPOINTS } from '@/shared/lib/constants';
 
 const BottomNavigationContainer = styled.div`
-  position: absolute;
-  bottom: 15rem;
-  left: 7rem;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 20px;
+  grid-area: 9 / 2 / 10 / 3;
+
+  @media (max-width: ${BREAKPOINTS.MOBILE}px) {
+    grid-area: 10 / 1 / 12 / 3;
+    gap: 10px;
+  }
 `;
 
 const Counter = styled.div`
-  font-size: 14px;
+  font-size: 20px;
   color: rgb(66, 86, 122);
   font-weight: 400;
   line-height: 18px;
   letter-spacing: 0;
+
+  @media (max-width: ${BREAKPOINTS.MOBILE}px) {
+    width: 100%;
+    text-align: left;
+  }
 `;
 
 const NavButtonsWrapper = styled.div`
   display: flex;
   gap: 20px;
+
+  @media (max-width: ${BREAKPOINTS.MOBILE}px) {
+    gap: 10px;
+  }
 `;
 
 interface TimelineNavigationProps {

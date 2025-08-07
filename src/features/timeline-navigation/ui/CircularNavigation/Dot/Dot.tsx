@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { gsap } from 'gsap';
-import { TIMELINE_CONSTANTS, COLORS } from '@/shared/lib/constants';
+import { COLORS } from '@/shared/lib/constants';
 
 interface DotProps {
   angle: number;
@@ -12,6 +12,7 @@ interface DotProps {
   dotNumber: number;
   category: string;
   isParentAnimating: boolean;
+  circleRadius: number;
 }
 
 const DotText = styled.span<{ isActive: boolean }>`
@@ -62,12 +63,12 @@ const StyledDotButton = styled.button.withConfig({
   font-weight: 400;
   color: ${COLORS.PRIMARY};
   transition: all 0.3s ease;
-  z-index: ${({ isActive }) => (isActive ? 15 : 12)};
+  z-index: 12;
 
   &:hover {
     width: 56px;
     height: 56px;
-    background: ${COLORS.BACKGROUND};
+    background: ${COLORS.WHITE};
     border: 1px solid ${COLORS.BORDER};
 
     ${DotText} {
@@ -77,23 +78,16 @@ const StyledDotButton = styled.button.withConfig({
   }
 `;
 
-const DotWrapper = styled.div<{ angle: number }>`
+const DotWrapper = styled.div<{ angle: number; circleRadius: number }>`
   position: absolute;
   left: 50%;
   top: 50%;
   width: 56px;
   height: 56px;
   transform: translate(
-    calc(
-      -50% +
-        ${({ angle }) => Math.sin(angle * (Math.PI / 180)) * TIMELINE_CONSTANTS.CIRCLE_RADIUS}px
-    ),
-    calc(
-      -50% +
-        ${({ angle }) => -Math.cos(angle * (Math.PI / 180)) * TIMELINE_CONSTANTS.CIRCLE_RADIUS}px
-    )
+    calc(-50% + ${({ angle, circleRadius }) => Math.sin(angle * (Math.PI / 180)) * circleRadius}px),
+    calc(-50% + ${({ angle, circleRadius }) => -Math.cos(angle * (Math.PI / 180)) * circleRadius}px)
   );
-  z-index: 11;
 `;
 
 const DotContent = styled.div`
@@ -114,11 +108,10 @@ const Dot: React.FC<DotProps> = ({
   dotNumber,
   category,
   isParentAnimating,
+  circleRadius,
 }) => {
   const labelRef = useRef<HTMLDivElement>(null);
   const dotContentRef = useRef<HTMLDivElement>(null);
-
-  console.log(isActive, 'isActive');
 
   useEffect(() => {
     if (labelRef.current) {
@@ -129,7 +122,13 @@ const Dot: React.FC<DotProps> = ({
           { opacity: 1, x: 0, duration: 0.3, delay: 0, ease: 'power2.out' },
         );
       } else {
-        gsap.to(labelRef.current, { opacity: 0, x: -20, duration: 0, ease: 'power2.in' });
+        gsap.to(labelRef.current, {
+          opacity: 0,
+          x: -20,
+          duration: 0.1,
+          delay: 0,
+          ease: 'power2.in',
+        });
       }
     }
   }, [isActive, isParentAnimating]);
@@ -141,7 +140,7 @@ const Dot: React.FC<DotProps> = ({
   }, [circleRotation]);
 
   return (
-    <DotWrapper angle={angle}>
+    <DotWrapper angle={angle} circleRadius={circleRadius}>
       <DotContent ref={dotContentRef}>
         <StyledDotButton isActive={isActive} onClick={onClick} disabled={disabled}>
           <DotText isActive={isActive}>{dotNumber}</DotText>

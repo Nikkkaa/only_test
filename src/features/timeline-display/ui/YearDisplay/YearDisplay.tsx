@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { gsap } from 'gsap';
-import { TIMELINE_CONSTANTS, COLORS } from '@/shared/lib/constants';
+import { TIMELINE_CONSTANTS, COLORS, BREAKPOINTS } from '@/shared/lib/constants';
+import { useIsMobile } from '@/hooks';
 
 interface YearDisplayProps {
   startYear: number;
@@ -12,16 +13,32 @@ interface YearDisplayProps {
 const YearContainer = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 80px;
-  letter-spacing: -2px;
+  grid-area: 6 / 3 / 8 / 11;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+
+  @media (max-width: ${BREAKPOINTS.MOBILE}px) {
+    grid-area: 4 / 1 / 6 / 7;
+    gap: 60px;
+  }
 `;
 
 const Year = styled.div<{ color: string }>`
-  font-size: 200px;
+  font-size: clamp(40px, 15vw, 200px);
   font-weight: 700;
-  line-height: 160px;
+  line-height: 1;
   color: ${(props) => props.color};
   position: relative;
+
+  @media (max-width: ${BREAKPOINTS.MOBILE}px) {
+    font-size: 56px;
+    font-weight: 600;
+    line-height: 0;
+    letter-spacing: -0.02em;
+  }
 `;
 
 const YearDisplay: React.FC<YearDisplayProps> = ({ startYear, endYear, isAnimating }) => {
@@ -29,6 +46,7 @@ const YearDisplay: React.FC<YearDisplayProps> = ({ startYear, endYear, isAnimati
   const endYearRef = useRef<HTMLDivElement>(null);
   const prevStartYear = useRef(startYear);
   const prevEndYear = useRef(endYear);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     if (isAnimating && startYearRef.current && endYearRef.current) {
@@ -63,7 +81,7 @@ const YearDisplay: React.FC<YearDisplayProps> = ({ startYear, endYear, isAnimati
 
   return (
     <YearContainer>
-      <Year ref={startYearRef} color={COLORS.SECONDARY}>
+      <Year ref={startYearRef} color={isMobile ? COLORS.SECONDARY_BLUE : COLORS.SECONDARY}>
         {startYear}
       </Year>
       <Year ref={endYearRef} color={COLORS.ACCENT}>

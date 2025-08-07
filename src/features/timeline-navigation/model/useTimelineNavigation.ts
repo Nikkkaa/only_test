@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 import { timelineApi } from '@/entities/timeline';
 import { TIMELINE_CONSTANTS } from '@/shared/lib/constants';
@@ -7,8 +7,8 @@ import { Swiper } from 'swiper/types';
 export const useTimelineNavigation = () => {
   const [currentPeriod, setCurrentPeriod] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [swiperInstance, setSwiperInstance] = useState<Swiper | null>(null);
   const timelineRef = useRef<HTMLDivElement>(null);
-  const swiperRef = useRef<Swiper | null>(null);
 
   const timelineData = timelineApi.getTimelineData().sort((a, b) => a.startYear - b.startYear);
   const currentData = timelineData[currentPeriod];
@@ -20,35 +20,25 @@ export const useTimelineNavigation = () => {
     setIsAnimating(true);
     setCurrentPeriod(newPeriod);
 
-    if (swiperRef.current) {
-      swiperRef.current.slideTo(0);
+    if (swiperInstance) {
+      swiperInstance.slideTo(0);
     }
 
     setTimeout(() => setIsAnimating(false), TIMELINE_CONSTANTS.ANIMATION_DURATION);
   };
 
-  const handlePrev = () => {
-    if (currentPeriod > 0) {
-      const newPeriod = currentPeriod - 1;
-      handlePeriodChange(newPeriod);
-    }
-  };
-
-  const handleNext = () => {
-    if (currentPeriod < totalPeriods - 1) {
-      const newPeriod = currentPeriod + 1;
-      handlePeriodChange(newPeriod);
-    }
-  };
+  const handlePrev = () => currentPeriod > 0 && handlePeriodChange(currentPeriod - 1);
+  const handleNext = () =>
+    currentPeriod < totalPeriods - 1 && handlePeriodChange(currentPeriod + 1);
 
   const handleSwiperInit = (swiper: Swiper) => {
-    swiperRef.current = swiper;
+    setSwiperInstance(swiper);
   };
 
   const initializeAnimation = () => {
     if (timelineRef.current) {
       gsap.fromTo(
-        timelineRef.current.children,
+        timelineRef.current.querySelectorAll(':scope > *'),
         { opacity: 0, y: 50 },
         {
           opacity: 1,
@@ -60,6 +50,14 @@ export const useTimelineNavigation = () => {
       );
     }
   };
+
+  useEffect(() => {
+    return () => {
+      if (swiperInstance) {
+        swiperInstance.destroy(true, true);
+      }
+    };
+  }, [swiperInstance]);
 
   return {
     currentPeriod,
