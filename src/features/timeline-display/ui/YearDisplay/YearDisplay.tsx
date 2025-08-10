@@ -20,6 +20,10 @@ const YearContainer = styled.div`
   height: 100%;
   pointer-events: none;
 
+  @media (max-width: ${BREAKPOINTS.MOBILE}px) and (max-width: ${BREAKPOINTS.DESKTOP}px) {
+    gap: 40px;
+  }
+
   @media (max-width: ${BREAKPOINTS.MOBILE}px) {
     grid-area: 4 / 1 / 6 / 7;
     gap: 60px;
@@ -27,7 +31,7 @@ const YearContainer = styled.div`
 `;
 
 const Year = styled.div<{ color: string }>`
-  font-size: clamp(40px, 15vw, 200px);
+  font-size: clamp(40px, 10vw, 200px);
   font-weight: 700;
   line-height: 1;
   color: ${(props) => props.color};

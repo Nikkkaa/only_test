@@ -1,5 +1,5 @@
 import { TimelinePage } from '@/pages';
-import { GlobalStyles } from '@/styles/GlobalStyles';
+import { GlobalStyles } from '@/shared/ui/GlobalStyles';
 import React from 'react';
 
 const App: React.FC = () => {

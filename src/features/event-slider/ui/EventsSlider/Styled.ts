@@ -10,9 +10,20 @@ export const EventsContainer = styled.div`
     grid-area: 7 / 1 / 10 / 7;
     margin-right: -25px;
   }
+
+  @media (min-width: ${BREAKPOINTS.MOBILE}px) and (max-width: ${BREAKPOINTS.DESKTOP}px) {
+    padding-bottom: 30px;
+  }
 `;
 
 export const ContentWrapper = styled.div`
+  @media (min-width: ${BREAKPOINTS.MOBILE}px) and (max-width: ${BREAKPOINTS.DESKTOP}px) {
+    display: flex;
+    gap: 20px;
+    margin: 0 20px;
+    align-items: center;
+    height: 200px;
+  }
   @media (min-width: ${BREAKPOINTS.DESKTOP}px) {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
@@ -32,7 +43,10 @@ export const Line = styled.div`
 
 export const StyledSwiper = styled(Swiper)`
   width: 100%;
-  grid-area: 1 / 2 / 3 / 12;
+
+  @media (min-width: ${BREAKPOINTS.DESKTOP}px) {
+    grid-area: 1 / 2 / 3 / 12;
+  }
 
   @media (max-width: ${BREAKPOINTS.MOBILE}px) {
     .swiper-slide {

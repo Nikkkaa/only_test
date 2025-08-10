@@ -41,6 +41,12 @@ const StyledButton = styled.button<{ variant: string; size: string }>`
             cursor: not-allowed;
           }
 
+          @media (min-width: ${BREAKPOINTS.MOBILE}px) and (max-width: ${BREAKPOINTS.DESKTOP}px) {
+            width: 35px;
+            height: 35px;
+            padding: 0;
+          }
+
           @media (max-width: ${BREAKPOINTS.MOBILE}px) {
             width: 35px;
             height: 35px;

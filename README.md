@@ -1,3 +1,6 @@
+🌐 **Демо:** [https://nikkkaa.github.io/only_test](https://nikkkaa.github.io/only_test)
+
+
 ### 🚀 Запуск проекта
 
 ```bash

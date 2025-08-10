@@ -8,7 +8,7 @@ const BottomNavigationContainer = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: 20px;
-  grid-area: 9 / 2 / 10 / 3;
+  grid-area: 9 / 2 / 10 / 4;
 
   @media (max-width: ${BREAKPOINTS.MOBILE}px) {
     grid-area: 10 / 1 / 12 / 3;
@@ -33,7 +33,7 @@ const NavButtonsWrapper = styled.div`
   display: flex;
   gap: 20px;
 
-  @media (max-width: ${BREAKPOINTS.MOBILE}px) {
+  @media (min-width: ${BREAKPOINTS.MOBILE}px) and (max-width: ${BREAKPOINTS.DESKTOP}px) {
     gap: 10px;
   }
 `;
